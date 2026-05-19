@@ -60,3 +60,34 @@ python3 wellfound_jobs.py \
 This exports:
 
 - `wellfound_entry_level_jobs.csv`
+
+## YC jobs scraper
+
+This script reads Y Combinator's public jobs pages directly and filters for
+entry-level backend, full stack, and SDE-style roles.
+
+Run:
+
+```bash
+python3 yc_jobs.py --output yc_entry_level_jobs.csv
+```
+
+This exports:
+
+- `yc_entry_level_jobs.csv`
+
+## Instahyre jobs scraper
+
+Instahyre appears to be more session-gated, so this script opens Chrome,
+lets you log in manually, and then extracts visible job cards from the
+opportunities page.
+
+Run:
+
+```bash
+python3 instahyre_jobs.py --profile-dir /Users/shivamverma/Desktop/Job-Scraper/instahyre-chrome-data
+```
+
+This exports:
+
+- `instahyre_entry_level_jobs.csv`

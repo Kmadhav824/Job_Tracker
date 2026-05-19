@@ -455,7 +455,7 @@ def scrape_posts(
             WebDriverWait(driver, 30).until(
                 EC.presence_of_element_located((By.TAG_NAME, "body"))
             )
-            time.sleep(random.uniform(3.0, 5.0))
+            time.sleep(random.uniform(5.0, 10.0))
             scroll_results(driver, scrolls)
             parsed_posts = parse_posts(driver.page_source, keyword)
             logging.info("Found %s post candidates for keyword: %s", len(parsed_posts), keyword)
