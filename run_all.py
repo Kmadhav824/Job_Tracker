@@ -2,9 +2,11 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
+from datetime import date
 
 
 ROOT = Path(__file__).resolve().parent
+DEFAULT_PYTHON = ROOT / ".venv" / "bin" / "python"
 
 SCRIPT_CONFIG = {
     "linkedin": {
@@ -13,19 +15,19 @@ SCRIPT_CONFIG = {
     },
     "wellfound": {
         "script": "wellfound_jobs.py",
-        "default_output": "wellfound_entry_level_jobs.csv",
+        "default_output": f"{date.today()}/wellfound_entry_level_jobs.csv",
     },
     "yc": {
         "script": "yc_jobs.py",
-        "default_output": "yc_entry_level_jobs.csv",
+        "default_output": f"{date.today()}/yc_entry_level_jobs.csv",
     },
     "instahyre": {
         "script": "instahyre_jobs.py",
-        "default_output": "instahyre_entry_level_jobs.csv",
+        "default_output": f"{date.today()}/instahyre_entry_level_jobs.csv",
     },
     "ats": {
         "script": "jobs_scraper.py",
-        "default_output": "entry_level_jobs.csv",
+        "default_output": f"{date.today()}/entry_level_jobs.csv",
     },
 }
 
@@ -122,7 +124,8 @@ def build_command(target: str, args: argparse.Namespace, output_dir: Path) -> li
     script_name = SCRIPT_CONFIG[target]["script"]
     output_path = output_dir / SCRIPT_CONFIG[target]["default_output"]
 
-    command = [sys.executable, str(ROOT / script_name)]
+    python_executable = str(DEFAULT_PYTHON) if DEFAULT_PYTHON.exists() else sys.executable
+    command = [python_executable, str(ROOT / script_name)]
 
     if target == "linkedin":
         command.extend(
