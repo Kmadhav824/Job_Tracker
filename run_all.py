@@ -11,7 +11,7 @@ DEFAULT_PYTHON = ROOT / ".venv" / "bin" / "python"
 SCRIPT_CONFIG = {
     "linkedin": {
         "script": "main.py",
-        "default_output": "linkedin_posts.csv",
+        "default_output": f"{date.today()}/linkedin_posts.csv",
     },
     "wellfound": {
         "script": "wellfound_jobs.py",
@@ -27,11 +27,11 @@ SCRIPT_CONFIG = {
     },
     "naukri": {
         "script": "naukri_jobs.py",
-        "default_output": "naukri_entry_level_jobs.csv",
+        "default_output": f"{date.today()}/naukri_entry_level_jobs.csv",
     },
     "ats": {
         "script": "jobs_scraper.py",
-        "default_output": f"{date.today()}/entry_level_jobs.csv",
+        "default_output": f"{date.today()}/ats_entry_level_jobs.csv",
     },
 }
 
@@ -116,6 +116,16 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Pass headless mode to browser-based scrapers.",
     )
+    parser.add_argument(
+        "--location",
+        action="append",
+        help="Allowed location keyword for job filters. Repeat for multiple locations (default: india).",
+    )
+    parser.add_argument(
+        "--no-remote",
+        action="store_true",
+        help="Exclude remote jobs from CSV outputs.",
+    )
     return parser.parse_args()
 
 
@@ -143,6 +153,7 @@ def build_command(target: str, args: argparse.Namespace, output_dir: Path) -> li
     command = [python_executable, str(ROOT / script_name)]
 
     if target == "linkedin":
+        profiles_output = output_path.with_name("linkedin_posts_profiles.csv")
         command.extend(
             [
                 "--profile-dir",
@@ -152,7 +163,7 @@ def build_command(target: str, args: argparse.Namespace, output_dir: Path) -> li
                 "--output",
                 str(output_path),
                 "--profiles-output",
-                str(output_dir / "linkedin_posts_profiles.csv"),
+                str(profiles_output),
             ]
         )
         if args.headless:
@@ -170,8 +181,18 @@ def build_command(target: str, args: argparse.Namespace, output_dir: Path) -> li
         )
         if args.headless:
             command.append("--headless")
+        if args.location:
+            for location in args.location:
+                command.extend(["--location", location])
+        if args.no_remote:
+            command.append("--no-remote")
     elif target == "yc":
         command.extend(["--output", str(output_path)])
+        if args.location:
+            for location in args.location:
+                command.extend(["--location", location])
+        if args.no_remote:
+            command.append("--no-remote")
     elif target == "instahyre":
         command.extend(
             [
@@ -185,6 +206,11 @@ def build_command(target: str, args: argparse.Namespace, output_dir: Path) -> li
         )
         if args.headless:
             command.append("--headless")
+        if args.location:
+            for location in args.location:
+                command.extend(["--location", location])
+        if args.no_remote:
+            command.append("--no-remote")
     elif target == "naukri":
         command.extend(
             [
@@ -198,6 +224,11 @@ def build_command(target: str, args: argparse.Namespace, output_dir: Path) -> li
         )
         if args.headless:
             command.append("--headless")
+        if args.location:
+            for location in args.location:
+                command.extend(["--location", location])
+        if args.no_remote:
+            command.append("--no-remote")
     elif target == "ats":
         command.extend(
             [
@@ -209,6 +240,11 @@ def build_command(target: str, args: argparse.Namespace, output_dir: Path) -> li
         )
         if args.ats_limit is not None:
             command.extend(["--limit", str(args.ats_limit)])
+        if args.location:
+            for location in args.location:
+                command.extend(["--location", location])
+        if args.no_remote:
+            command.append("--no-remote")
 
     return command
 
